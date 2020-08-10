@@ -13,7 +13,7 @@ after_success:
   - docker build -t sergesosnovski/multi-nginx ./nginx
   - docker build -t sergesosnovski/multi-server ./server
   - docker build -t sergesosnovski/multi-worker ./worker
-  #Log in to the docker CLI
+  #Log in to the docker CLI using docker cred saved on travis
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
   #take those images and submit them to the docker hub
   - docker push sergesosnovski/multi-client
