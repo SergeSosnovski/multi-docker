@@ -1,4 +1,6 @@
 sudo: required
+language: generic
+
 services:
   - docker
 
@@ -6,28 +8,27 @@ before_install:
   - docker build -t sergesosnovski/react-test -f ./client/Dockerfile.dev ./client
 
 script:
-  - docker run -e CI=true sergesosnovski/react-test npm test
+  - docker run sergesosnovski/react-test npm test -- --coverage
 
 after_success:
   - docker build -t sergesosnovski/multi-client ./client
   - docker build -t sergesosnovski/multi-nginx ./nginx
   - docker build -t sergesosnovski/multi-server ./server
   - docker build -t sergesosnovski/multi-worker ./worker
-  #Log in to the docker CLI using docker cred saved on travis
+  # Log in to the docker CLI
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
-  #take those images and submit them to the docker hub
+  # Take those images and push them to docker hub
   - docker push sergesosnovski/multi-client
   - docker push sergesosnovski/multi-nginx
   - docker push sergesosnovski/multi-server
   - docker push sergesosnovski/multi-worker
 
 deploy:
-  edge: true
   provider: elasticbeanstalk
-  region: us-east-1
+  region: us-west-1
   app: multi-docker
   env: MultiDocker-env
-  bucket_name: elasticbeanstalk-us-east-1-813381322653
+  bucket_name: elasticbeanstalk-us-west-1-306476627547
   bucket_path: docker-multi
   on:
     branch: master
